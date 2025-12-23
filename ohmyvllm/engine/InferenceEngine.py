@@ -12,7 +12,8 @@ class InferenceEngine:
         self.model.eval()
         self.device = device
 
-    def generate(self, prompts: list[Prompt], max_new_tokens: int = 256, temperature: float = 0.6, top_p: float = 0.9):
+    def generate(self, prompts: list[Prompt], sampling_params):
+        # max_new_tokens: int = 256, temperature: float = 0.6, top_p: float = 0.9
         results = []
 
         for prompt in prompts:
@@ -27,10 +28,10 @@ class InferenceEngine:
             out = self.model.generate(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                max_new_tokens=max_new_tokens,
-                do_sample=(temperature > 0),
-                temperature=temperature,
-                top_p=top_p,
+                max_new_tokens=sampling_params.max_new_tokens,
+                do_sample=(sampling_params.temperature > 0),
+                temperature=sampling_params.temperature,
+                top_p=sampling_params.top_p,
                 pad_token_id=self.tokenizer.eos_token_id,
                 eos_token_id=self.tokenizer.eos_token_id,
             )
