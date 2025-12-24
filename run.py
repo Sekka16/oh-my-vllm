@@ -10,7 +10,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(path)
     model = InferenceEngine(path, device=device)
 
-    sampling_params = SamplingParams(max_new_tokens=256,temperature=0.6)
+    sampling_params = SamplingParams(max_tokens=256,temperature=0.6)
     prompts = [
         "introduce yourself",
         "list all prime numbers within 100",

@@ -2,14 +2,14 @@ from dataclasses import dataclass
 
 @dataclass
 class SamplingParams:
-    max_new_tokens: int = 64
+    max_tokens: int = 64
     temperature: float = 0.0
     top_p: float = 1.0
     ignore_eos: bool = False
 
     def __post_init__(self):
-        if self.max_new_tokens <= 0:
-            raise ValueError("max_new_tokens must be positive")
+        if self.max_tokens <= 0:
+            raise ValueError("max_tokens must be positive")
 
         if self.temperature < 0:
             raise ValueError("temperature must be >= 0")

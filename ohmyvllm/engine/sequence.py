@@ -23,7 +23,7 @@ class Sequence:
         self.generated_ids.append(token_id)
         if (not self.sampling_params.ignore_eos) and (token_id == eos_token_id):
             self.is_finished = True
-        if len(self.generated_ids) >= self.sampling_params.max_new_tokens:
+        if len(self.generated_ids) >= self.sampling_params.max_tokens:
             self.is_finished = True
 
     def extend(self, token_ids, eos_token_id):
