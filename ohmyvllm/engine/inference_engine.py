@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoTokenizer
 from transformers import AutoModelForCausalLM
+from ohmyvllm.engine.sequence import Sequence
 
 from typing import Union
 Prompt = Union[str, list[int]]
@@ -15,15 +16,16 @@ class InferenceEngine:
     def generate(self, prompts: list[Prompt], sampling_params):
         # max_new_tokens: int = 256, temperature: float = 0.6, top_p: float = 0.9
         results = []
+        eos_id = self.tokenizer.eos_token_id
 
         for prompt in prompts:
             if isinstance(prompt, str):
-                enc = self.tokenizer(prompt, return_tensors="pt")
-                input_ids = enc["input_ids"].to(self.device)
-                attention_mask = enc["attention_mask"].to(self.device)
+                prompt_ids = self.tokenizer.encode(prompt)
             else:
-                input_ids = torch.tensor([prompt], dtype=torch.long, device=self.device)
-                attention_mask = torch.ones_like(input_ids, device=self.device)
+                prompt_ids = prompt
+            seq = Sequence(prompt_ids, sampling_params)
+            input_ids = torch.tensor([seq.input_ids], dtype=torch.long, device=self.device)
+            attention_mask = torch.ones_like(input_ids, device=self.device)
         
             out = self.model.generate(
                 input_ids=input_ids,
@@ -36,8 +38,9 @@ class InferenceEngine:
                 eos_token_id=self.tokenizer.eos_token_id,
             )
 
-            new_tokens = out[0, input_ids.shape[1]:].tolist()
+            new_tokens = out[0, input_ids.shape[1]:].tolist() # 切分输入prompt和generated部分
             text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)
+            seq.extend(new_tokens, eos_id)
 
             results.append({
                 "text": text,

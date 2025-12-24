@@ -1,7 +1,7 @@
 import os
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from ohmyvllm.engine.InferenceEngine import InferenceEngine
+from ohmyvllm.engine.inference_engine import InferenceEngine
 from ohmyvllm import SamplingParams
 
 def main():
